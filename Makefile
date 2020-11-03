@@ -32,7 +32,7 @@ ifndef PYENV_SHELL
 	$(error "Add 'pyenv init' to your shell to enable shims and autocompletion, (usually by adding to your bash_profile, zshrc, or other locations based on your platform)")
 endif
 	@echo Detected $(PYENV)
-	pyenv install --skip-existing
+	# pyenv install --skip-existing
 
 #============================================================#
 #============================================================#
@@ -65,14 +65,14 @@ help:
 	@echo " "
 	@exit 0
 
-# Initializing a new poetry project and DVC - DONT RUN THIS, JUST FOR VERY 1ST TIME
-init_project: checkenv
-	poetry init
-	pre-commit install
 
 # Install dependencies listed in pyproject.toml file
 install_dependencies:
 	poetry install --no-root
+
+# Initializing a new poetry project and DVC - DONT RUN THIS, JUST FOR VERY 1ST TIME
+init_project: checkenv install_dependencies
+	pre-commit install
 
 # Create a poetry virtualenv based kernel for jupyter consumption
 create_kernel:

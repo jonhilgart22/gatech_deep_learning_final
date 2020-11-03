@@ -13,8 +13,8 @@ notebooks/.ipynb_checkpoints
 # Terraform
 .terraform
 
-# Locally saved models
-predict_cpt_codes/models/
+# egg
+*.egg-info
 
 .env
 

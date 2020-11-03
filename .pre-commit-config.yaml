@@ -1,76 +1,68 @@
 default_language_version:
-    python: python3.7
-  repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v2.4.0
-      hooks:
-        - id: check-json
-        - id: check-toml
-        - id: check-yaml
-        - id: check-case-conflict
-        - id: check-merge-conflict
-        - id: debug-statements
-        - id: detect-private-key
-        - id: end-of-file-fixer
-          exclude: ^.*.json$
-        - id: flake8
-        - id: pretty-format-json
-          args: [--autofix]
-        - id: requirements-txt-fixer
-        - id: sort-simple-yaml
-        - id: trailing-whitespace
-        - id: detect-aws-credentials
-        - id: check-added-large-files
-        - id: no-commit-to-branch
-          args:
-            [
-              "--pattern",
-              '^(?!(feature|bug|not_pivotal|chore)\/(\w+)).*',
-              "--branch",
-              "main",
-            ]
-    - repo: https://github.com/Lucas-C/pre-commit-hooks
-      rev: v1.1.7
-      hooks:
-        - id: remove-crlf
-        - id: remove-tabs
-    - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
-      rev: v0.1.0
-      hooks:
-        - id: dockerfilelint
-          stages: [commit]
-    - repo: https://github.com/psf/black
-      rev: 19.10b0
-      hooks:
-        - id: black
-          name: Format changed Python files with Black
-    - repo: https://github.com/pre-commit/pygrep-hooks
-      rev: v1.4.2
-      hooks:
-        - id: python-check-blanket-noqa
-          name: Check blanket noqa
-        - id: python-use-type-annotations
-          name: Type annotations not comments
-    - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: v0.740
-      hooks:
-        - id: mypy
-          name: Check static typing using mypy
-          args:
-            [
-              --check-untyped-defs,
-              --disallow-untyped-defs,
-              --disallow-untyped-calls,
-              --ignore-missing-imports,
-            ]
-          exclude: "terraform/modules/analytics-platform/spark/bootstrap/jupyter_config.py|terraform/modules/superset/superset/config/superset_config.py"
-    - repo: git://github.com/pecigonzalo/pre-commit-shfmt
-      rev: 9ee28e3f14556aa88dd5255f2e091d1d2f607bb7
-      hooks:
-        - id: shell-fmt
-          name: Format all Shell scripts
-          files: \.(sh)$
-    - repo: https://github.com/gruntwork-io/pre-commit
-      rev: v0.0.9
-      hooks:
-        - id: terraform-fmt
+  python: python3.7
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude: ^.*.json$
+      - id: flake8
+      - id: pretty-format-json
+        args: [--autofix]
+      - id: requirements-txt-fixer
+      - id: sort-simple-yaml
+      - id: trailing-whitespace
+      - id: detect-aws-credentials
+      - id: check-added-large-files
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.7
+    hooks:
+      - id: remove-crlf
+      - id: remove-tabs
+  - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
+    rev: v0.1.0
+    hooks:
+      - id: dockerfilelint
+        stages: [commit]
+  - repo: https://github.com/psf/black
+    rev: 19.10b0
+    hooks:
+      - id: black
+        name: Format changed Python files with Black
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.4.2
+    hooks:
+      - id: python-check-blanket-noqa
+        name: Check blanket noqa
+      - id: python-use-type-annotations
+        name: Type annotations not comments
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.740
+    hooks:
+      - id: mypy
+        name: Check static typing using mypy
+        args:
+          [
+            --check-untyped-defs,
+            --disallow-untyped-defs,
+            --disallow-untyped-calls,
+            --ignore-missing-imports,
+          ]
+        exclude: "terraform/modules/analytics-platform/spark/bootstrap/jupyter_config.py|terraform/modules/superset/superset/config/superset_config.py"
+  - repo: git://github.com/pecigonzalo/pre-commit-shfmt
+    rev: 9ee28e3f14556aa88dd5255f2e091d1d2f607bb7
+    hooks:
+      - id: shell-fmt
+        name: Format all Shell scripts
+        files: \.(sh)$
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.0.9
+    hooks:
+      - id: terraform-fmt
