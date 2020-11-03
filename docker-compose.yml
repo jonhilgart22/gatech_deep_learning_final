@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  # Serve a local model (port 8080)
+  serve-local:
+    image: ml-deep-learning-final-development:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+    environment:
+      ENVIRONMENT: development
+      SERVICE_NAME: adapticons
+      INSTANCE: default
+    ports:
+      - "8080:80"
+    volumes:
+      - ~/.aws:/root/.aws

@@ -1,0 +1,10 @@
+# Ignore everything
+**
+
+# Except for
+!predict_cpt_codes/**
+!tests/**
+!lib/**
+!setup.cfg
+!pyproject.toml
+!poetry.lock

@@ -1,0 +1,23 @@
+# General
+*.pyc
+notebooks/.ipynb_checkpoints
+.virtualenvs
+.DS_Store
+
+# notebook info
+.ipynb_checkpoints
+
+# mypy cache
+.mypy_cache
+
+# Terraform
+.terraform
+
+# Locally saved models
+predict_cpt_codes/models/
+
+.env
+
+predict_cpt_codes.egg-info
+
+.vscode/
