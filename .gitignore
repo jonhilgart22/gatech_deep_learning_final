@@ -21,3 +21,6 @@ notebooks/.ipynb_checkpoints
 predict_cpt_codes.egg-info
 
 .vscode/
+
+#
+data/

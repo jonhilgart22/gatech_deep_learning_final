@@ -72,7 +72,7 @@ install_dependencies:
 
 # Initializing a new poetry project and DVC - DONT RUN THIS, JUST FOR VERY 1ST TIME
 init_project: checkenv install_dependencies
-	pre-commit install
+	pre-commit install && python3 -m ipykernel install --user --name=adapticons
 
 # Create a poetry virtualenv based kernel for jupyter consumption
 create_kernel:
