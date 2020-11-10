@@ -43,19 +43,19 @@ repos:
         name: Check blanket noqa
       - id: python-use-type-annotations
         name: Type annotations not comments
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.740
-    hooks:
-      - id: mypy
-        name: Check static typing using mypy
-        args:
-          [
-            --check-untyped-defs,
-            --disallow-untyped-defs,
-            --disallow-untyped-calls,
-            --ignore-missing-imports,
-          ]
-        exclude: "terraform/modules/analytics-platform/spark/bootstrap/jupyter_config.py|terraform/modules/superset/superset/config/superset_config.py|adapticons/modeling/glue_training.py"
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v0.740
+  #   hooks:
+  #     - id: mypy
+  #       name: Check static typing using mypy
+  #       args:
+  #         [
+  #           --check-untyped-defs,
+  #           --disallow-untyped-defs,
+  #           --disallow-untyped-calls,
+  #           --ignore-missing-imports,
+  #         ]
+  #       exclude: "terraform/modules/analytics-platform/spark/bootstrap/jupyter_config.py|terraform/modules/superset/superset/config/superset_config.py|adapticons/modeling/glue_training.py"
   - repo: git://github.com/pecigonzalo/pre-commit-shfmt
     rev: 9ee28e3f14556aa88dd5255f2e091d1d2f607bb7
     hooks:

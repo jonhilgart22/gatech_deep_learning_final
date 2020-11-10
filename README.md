@@ -4,12 +4,17 @@
 
 Get started with
 `make init_project`
+
+# Download GLUE data
+
+`python adapticons/modeling/download_glue.py --data_dir 'data/glue'`
+
 # Launch GLUE training
 
 - Set env vars
 `export TASK_NAME=MNLI`
 
-`export GLUE_DIR=/adapticons/modeling`
+`export GLUE_DIR=/data/glue`
 
 -  Launch training
 ```bash
@@ -27,6 +32,7 @@ python adapticons/modeling/glue_training.py \
   --overwrite_output_dir \
   --train_adapter \
   --adapter_config pfeiffer
+  --no_cuda
 ```
 
 # TODO:
