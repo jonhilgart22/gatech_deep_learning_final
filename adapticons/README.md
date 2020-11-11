@@ -14,7 +14,7 @@ python -m scripts.run_language_modeling --train_data_file datasets/chemprot/trai
                                         --do_eval \
                                         --evaluate_during_training  \
                                         --do_train \
-                                        --num_train_epochs 10  \
+                                        --num_train_epochs 100  \
                                         --learning_rate 0.0001 \
                                         --logging_steps 50 \
                                         --overwrite_output_dir \

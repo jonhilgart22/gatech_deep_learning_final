@@ -809,6 +809,7 @@ def main():
 
             model = AutoModelWithLMHead.from_pretrained(checkpoint)
             model.load_adapter(args.output_dir)  # load saved adapter
+            model.set_active_adapters([args.adapter_name])  # set the active adapter
 
             model.to(args.device)
             result = evaluate(args, model, tokenizer, prefix=prefix)
