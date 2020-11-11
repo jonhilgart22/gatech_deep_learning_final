@@ -50,6 +50,8 @@ from transformers import (
     PreTrainedModel,
     PreTrainedTokenizer,
     get_linear_schedule_with_warmup,
+    AdapterConfig,
+    AdapterType
 )
 
 
@@ -625,6 +627,7 @@ def main():
     parser.add_argument(
         "--adapter_config_name", type=str, default="pfeiffer", help="adapter config name.",
     )
+    parser.add_argument("--adapter_reduction_factor", type=int, default=12, help="adapter reduction factor.")
     args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
@@ -740,7 +743,8 @@ def main():
 
     # load pre-trained task adapter from Adapter Hub
     # this method call will also load a pre-trained classification head for the adapter task
-    model.add_adapter(args.adapter_name, "text_lang", config=args.adapter_config_name)  # chemprot adapter?
+    config = AdapterConfig.load(args.adapter_config_name, reduction_factor=args.adapter_reduction_factor)
+    model.add_adapter(args.adapter_name, "text_lang", config=config)  # chemprot adapter?
     model.train_adapter([args.adapter_name])
     model.set_active_adapters([args.adapter_name])
 
