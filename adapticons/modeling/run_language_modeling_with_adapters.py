@@ -51,7 +51,7 @@ from transformers import (
     PreTrainedTokenizer,
     get_linear_schedule_with_warmup,
     AdapterConfig,
-    AdapterType
+    AdapterType,
 )
 
 
@@ -808,6 +808,8 @@ def main():
             prefix = checkpoint.split("/")[-1] if checkpoint.find("checkpoint") != -1 else ""
 
             model = AutoModelWithLMHead.from_pretrained(checkpoint)
+            model.load_adapter(args.output_dir)  # load saved adapter
+
             model.to(args.device)
             result = evaluate(args, model, tokenizer, prefix=prefix)
             result = dict((k + "_{}".format(global_step), v) for k, v in result.items())
