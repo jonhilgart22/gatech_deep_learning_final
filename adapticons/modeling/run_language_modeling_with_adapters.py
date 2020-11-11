@@ -619,8 +619,12 @@ def main():
     )
     parser.add_argument("--server_ip", type=str, default="", help="For distant debugging.")
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
-    parser.add_argument("--adapter_name", type=str, default="nli/scitail@ukp", help="type of adapter to train.")
-    parser.add_argument("--adapter_config_name", type=str, default="pfeiffer", help="adapter config name.")
+    parser.add_argument(
+        "--adapter_name", type=str, default="nli/scitail@ukp", help="type of adapter to train.",
+    )
+    parser.add_argument(
+        "--adapter_config_name", type=str, default="pfeiffer", help="adapter config name.",
+    )
     args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
@@ -736,8 +740,8 @@ def main():
 
     # load pre-trained task adapter from Adapter Hub
     # this method call will also load a pre-trained classification head for the adapter task
-
-    model.add_adapter(args.adapter_name, "text_task", config=args.adapter_config_name)  # chemprot adapter?
+    model.add_adapter(args.adapter_name, "text_lang", config=args.adapter_config_name)  # chemprot adapter?
+    model.train_adapter([args.adapter_name])
     model.set_active_adapters([args.adapter_name])
 
     model.to(args.device)
