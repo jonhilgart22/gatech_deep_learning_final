@@ -5,6 +5,10 @@
 Get started with
 `make init_project`
 
+# Spreadsheet of trained eval_results
+
+[Spreadsheet](https://docs.google.com/spreadsheets/d/1NvbIKsmWVI_wYF_j-fXwX3lfA5Tc2oikwBKMGfuS0mE/edit#gid=0)
+
 # Download GLUE data
 
 `python adapticons/modeling/download_glue.py --data_dir 'data/glue'`
@@ -27,11 +31,11 @@ python adapticons/modeling/glue_training.py \
   --max_seq_length 128 \
   --per_device_train_batch_size 32 \
   --learning_rate 1e-4 \
-  --num_train_epochs 10.0 \
+  --num_train_epochs 10.0 \hs rsync
   --output_dir /tmp/$TASK_NAME \
   --overwrite_output_dir \
   --train_adapter \
-  --adapter_config pfeiffer
+  --adapter_config pfeiffer \
   --no_cuda
 ```
 
