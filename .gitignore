@@ -24,3 +24,5 @@ predict_cpt_codes.egg-info
 
 #
 data/
+
+runs/
