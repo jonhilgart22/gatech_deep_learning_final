@@ -755,39 +755,39 @@ def main():
         # ~~~~~ Here comes the interesting part of setting up AdapterFusion training ~~~~~
 
         # First, load the pre-trained adapters we want to fuse from Hub
-        model.add_adapter("sentiment/sst-2@ukp", "text_lang", config=PfeifferConfig())
-        model.add_adapter("nli/multinli@ukp", "text_lang", config=config)
-        model.add_adapter("nli/rte@ukp", "text_lang", config=config)
-        model.add_adapter("sts/mrpc@ukp", "text_lang", config=config)
-        model.add_adapter("sts/qqp@ukp", "text_lang", config=config)
-        model.add_adapter("comsense/cosmosqa@ukp", "text_lang", config=config)
-        model.add_adapter("comsense/csqa@ukp", "text_lang", config=config)
-        model.add_adapter("comsense/hellaswag@ukp", "text_lang", config=config)
-        model.add_adapter("comsense/siqa@ukp", "text_lang", config=config)
-        model.add_adapter("comsense/winogrande@ukp", "text_lang", config=config)
-        model.add_adapter("nli/cb@ukp", "text_lang", config=config)
-        model.add_adapter("nli/sick@ukp", "text_lang", config=config)
-        model.add_adapter("nli/scitail@ukp", "text_lang", config=PfeifferConfig())
-        model.add_adapter("qa/boolq@ukp", "text_lang", config=config)
-        model.add_adapter("sentiment/imdb@ukp", "text_lang", config=config)
+        model.load_adapter("sst-2", "text_lang", config=config)
+        model.load_adapter("multinli", "text_lang", config=config)
+        model.load_adapter("rte", "text_lang", config=config)
+        model.load_adapter("mrpc", "text_lang", config=config)
+        model.load_adapter("qqp", "text_lang", config=config)
+        model.load_adapter("cosmosqa", "text_lang", config=config)
+        model.load_adapter("csqa", "text_lang", config=config)
+        model.load_adapter("hellaswag", "text_lang", config=config)
+        model.load_adapter("siqa", "text_lang", config=config)
+        model.load_adapter("winogrande", "text_lang", config=config)
+        model.load_adapter("nli/cb", "text_lang", config=config)
+        model.load_adapter("sick", "text_lang", config=config)
+        model.load_adapter("scitail", "text_lang", config=config)
+        model.load_adapter("boolq", "text_lang", config=config)
+        model.load_adapter("imdb", "text_lang", config=config)
 
         ADAPTER_SETUP = [
             [
-                "sentiment/sst-2@ukp",
-                "nli/multinli@ukp",
-                "nli/rte@ukp",
-                "sts/mrpc@ukp",
-                "sts/qqp@ukp",
-                "comsense/cosmosqa@ukp",
-                "comsense/csqa@ukp",
-                "comsense/hellaswag@ukp",
-                "comsense/siqa@ukp",
-                "comsense/winogrande@ukp",
-                "nli/cb@ukp",
-                "nli/sick@ukp",
-                "nli/scitail@ukp",
-                "qa/boolq@ukp",
-                "sentiment/imdb@ukp",
+                "sst-2",
+                "mnli",
+                "rte",
+                "mrpc",
+                "qqp",
+                "cosmosqa",
+                "csqa",
+                "hellaswag",
+                "socialiqa",
+                "winogrande",
+                "cb",
+                "sick",
+                "scitail",
+                "boolq",
+                "imdb",
             ]
         ]
 

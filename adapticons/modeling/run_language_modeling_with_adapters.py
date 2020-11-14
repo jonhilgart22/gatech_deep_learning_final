@@ -744,9 +744,14 @@ def main():
     # load pre-trained task adapter from Adapter Hub
     # this method call will also load a pre-trained classification head for the adapter task
     config = AdapterConfig.load(args.adapter_config_name, reduction_factor=args.adapter_reduction_factor)
-    model.add_adapter(args.adapter_name, "text_lang", config=config)  # chemprot adapter?
-    model.train_adapter([args.adapter_name])
-    model.set_active_adapters([args.adapter_name])
+    if not model.config.adapters:
+        logger.info(f"Adding a new adapter to train with name ={args.adapter_name}")
+
+        model.add_adapter(args.adapter_name, "text_lang", config=config)  # chemprot adapter?
+        model.train_adapter([args.adapter_name])
+        model.set_active_adapters([args.adapter_name])
+    else:
+        logger.info("Adapter already loaded")
 
     model.to(args.device)
 
