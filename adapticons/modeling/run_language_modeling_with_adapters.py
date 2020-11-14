@@ -622,7 +622,7 @@ def main():
     parser.add_argument("--server_ip", type=str, default="", help="For distant debugging.")
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
     parser.add_argument(
-        "--adapter_name", type=str, default="nli/scitail@ukp", help="type of adapter to train.",
+        "--adapter_name", type=str, default="custom_adapter", help="type of adapter to train.",
     )
     parser.add_argument(
         "--adapter_config_name", type=str, default="pfeiffer", help="adapter config name.",
