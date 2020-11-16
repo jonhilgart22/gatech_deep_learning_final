@@ -631,6 +631,9 @@ def main():
         "--adapter_config_name", type=str, default="pfeiffer", help="adapter config name.",
     )
     parser.add_argument("--adapter_reduction_factor", type=int, default=12, help="adapter reduction factor.")
+    parser.add_argument("--adapter_one", type=str, help="location of first adapter path")
+    parser.add_argument("--adapter_two", type=str, help="location of second adapter path")
+    parser.add_argument("--adapter_three", type=str, help="location of third adapter path")
     args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
@@ -754,43 +757,22 @@ def main():
 
         # ~~~~~ Here comes the interesting part of setting up AdapterFusion training ~~~~~
 
+        if not args.adapter_one:
+            raise ValueError("You need to pass a directory path to at least one adapter.")
+
         # First, load the pre-trained adapters we want to fuse from Hub
-        model.load_adapter("sst-2", "text_lang", config=config)
-        model.load_adapter("multinli", "text_lang", config=config)
-        model.load_adapter("rte", "text_lang", config=config)
-        model.load_adapter("mrpc", "text_lang", config=config)
-        model.load_adapter("qqp", "text_lang", config=config)
-        model.load_adapter("cosmosqa", "text_lang", config=config)
-        model.load_adapter("csqa", "text_lang", config=config)
-        model.load_adapter("hellaswag", "text_lang", config=config)
-        model.load_adapter("siqa", "text_lang", config=config)
-        model.load_adapter("winogrande", "text_lang", config=config)
-        model.load_adapter("nli/cb", "text_lang", config=config)
-        model.load_adapter("sick", "text_lang", config=config)
-        model.load_adapter("scitail", "text_lang", config=config)
-        model.load_adapter("boolq", "text_lang", config=config)
-        model.load_adapter("imdb", "text_lang", config=config)
+        model.load_adapter(args.adapter_one, "text_lang", config=config)
+        if args.adapter_two:
+            model.load_adapter(args.adapter_two, "text_lang", config=config)
+        if args.adapter_three:
+            model.load_adapter(args.adapter_three, "text_lang", config=config)
 
-        ADAPTER_SETUP = [
-            [
-                "sst-2",
-                "mnli",
-                "rte",
-                "mrpc",
-                "qqp",
-                "cosmosqa",
-                "csqa",
-                "hellaswag",
-                "socialiqa",
-                "winogrande",
-                "cb",
-                "sick",
-                "scitail",
-                "boolq",
-                "imdb",
+        if args.adapter_two & args.adapter_three:
+            ADAPTER_SETUP = [
+                [args.adapter_one.split("/"[-1]), args.adapter_two.split("/"[-1]), args.adapter_three.split("/"[-1])]
             ]
-        ]
-
+        elif args.adapter_two:
+            ADAPTER_SETUP = [[args.adapter_one.split("/"[-1]), args.adapter_two.split("/"[-1])]]
         # Add a fusion layer and tell the model to train fusion
         model.add_fusion(ADAPTER_SETUP[0], "dynamic")
         model.train_fusion(ADAPTER_SETUP)
