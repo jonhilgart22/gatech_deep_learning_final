@@ -766,14 +766,16 @@ def main():
             model.load_adapter(args.adapter_two, "text_lang", config=config)
         if args.adapter_three is not None:
             model.load_adapter(args.adapter_three, "text_lang", config=config)
-
-        if (args.adapter_two is not None) and (args.adapter_three is not None):
-            ADAPTER_SETUP = [
-                [args.adapter_one.split("/"[-1]), args.adapter_two.split("/"[-1]), args.adapter_three.split("/"[-1])]
+        ADAPTER_SETUP = [
+            [
+                list(model.config.adapters.adapters.keys())[i]
+                for i in range(len(list(model.config.adapters.adapters.keys())))
             ]
-        elif args.adapter_two is not None:
-            ADAPTER_SETUP = [[args.adapter_one.split("/"[-1]), args.adapter_two.split("/"[-1])]]
+        ]
         # Add a fusion layer and tell the model to train fusion
+        logger.info(f"Using adapter fusion with the following setup {ADAPTER_SETUP}")
+        logger.info(f"Model adapters = {ADAPTER_SETUP}")
+
         model.add_fusion(ADAPTER_SETUP[0], "dynamic")
         model.train_fusion(ADAPTER_SETUP)
 
