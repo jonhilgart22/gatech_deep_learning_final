@@ -816,7 +816,7 @@ def main():
         model_to_save.save_pretrained(args.output_dir)
         tokenizer.save_pretrained(args.output_dir)
         # save adapter
-        model.save_adapter(args.output_dir, args.adapter_name)
+        model.save_adapter(args.output_dir, ADAPTER_SETUP[0])
 
         # Good practice: save your training arguments together with the trained model
         torch.save(args, os.path.join(args.output_dir, "training_args.bin"))
