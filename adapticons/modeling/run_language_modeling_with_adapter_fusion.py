@@ -762,16 +762,16 @@ def main():
 
         # First, load the pre-trained adapters we want to fuse from Hub
         model.load_adapter(args.adapter_one, "text_lang", config=config)
-        if len(args.adapter_two) > 0:
+        if args.adapter_twoi is not None:
             model.load_adapter(args.adapter_two, "text_lang", config=config)
-        if len(args.adapter_three) > 0:
+        if args.adapter_three is not None:
             model.load_adapter(args.adapter_three, "text_lang", config=config)
 
-        if len(args.adapter_two) > 0 & len(args.adapter_three) > 0:
+        if args.adapter_two is not None & args.adapter_three is not None:
             ADAPTER_SETUP = [
                 [args.adapter_one.split("/"[-1]), args.adapter_two.split("/"[-1]), args.adapter_three.split("/"[-1])]
             ]
-        elif len(args.adapter_two) > 0:
+        elif args.adapter_two is not None:
             ADAPTER_SETUP = [[args.adapter_one.split("/"[-1]), args.adapter_two.split("/"[-1])]]
         # Add a fusion layer and tell the model to train fusion
         model.add_fusion(ADAPTER_SETUP[0], "dynamic")
