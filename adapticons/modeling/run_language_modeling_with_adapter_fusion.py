@@ -762,12 +762,12 @@ def main():
 
         # First, load the pre-trained adapters we want to fuse from Hub
         model.load_adapter(args.adapter_one, "text_lang", config=config)
-        if args.adapter_twoi is not None:
+        if args.adapter_two is not None:
             model.load_adapter(args.adapter_two, "text_lang", config=config)
         if args.adapter_three is not None:
             model.load_adapter(args.adapter_three, "text_lang", config=config)
 
-        if args.adapter_two is not None & args.adapter_three is not None:
+        if (args.adapter_two is not None) and (args.adapter_three is not None):
             ADAPTER_SETUP = [
                 [args.adapter_one.split("/"[-1]), args.adapter_two.split("/"[-1]), args.adapter_three.split("/"[-1])]
             ]
