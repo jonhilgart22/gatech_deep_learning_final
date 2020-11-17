@@ -816,7 +816,9 @@ def main():
         model_to_save.save_pretrained(args.output_dir)
         tokenizer.save_pretrained(args.output_dir)
         # save adapter
-        model.save_adapter(args.output_dir, ADAPTER_SETUP[0])
+
+        for name in list(model.config.adapters.adapters.keys()):
+            model.save_adapter(args.output_dir, name)
 
         # Good practice: save your training arguments together with the trained model
         torch.save(args, os.path.join(args.output_dir, "training_args.bin"))
@@ -843,7 +845,8 @@ def main():
             model = AutoModelWithLMHead.from_pretrained(checkpoint)
             if args.use_adapter_fusion:
                 model.load_adapter(args.output_dir)  # load saved adapter
-                model.set_active_adapters(ADAPTER_SETUP)  # set the active adapter
+                for name in list(model.config.adapters.adapters.keys()):
+                    model.set_active_adapters(name)  # set the active adapter
 
             model.to(args.device)
             result = evaluate(args, model, tokenizer, prefix=prefix)
