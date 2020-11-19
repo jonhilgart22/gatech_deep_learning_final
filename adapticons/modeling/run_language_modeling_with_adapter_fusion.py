@@ -634,6 +634,8 @@ def main():
     parser.add_argument("--adapter_one", type=str, help="location of first adapter path")
     parser.add_argument("--adapter_two", type=str, help="location of second adapter path")
     parser.add_argument("--adapter_three", type=str, help="location of third adapter path")
+    parser.add_argument("--adapter_four", type=str, help="location of fourth adapter path")
+    parser.add_argument("--adapter_five", type=str, help="location of fifth adapter path")
     args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
@@ -766,6 +768,11 @@ def main():
             model.load_adapter(args.adapter_two, "text_lang", config=config)
         if args.adapter_three is not None:
             model.load_adapter(args.adapter_three, "text_lang", config=config)
+        if args.adapter_four is not None:
+            model.load_adapter(args.adapter_four, "text_lang", config=config)
+        if args.adapter_five is not None:
+            model.load_adapter(args.adapter_five, "text_lang", config=config)
+
         ADAPTER_SETUP = [
             [
                 list(model.config.adapters.adapters.keys())[i]
