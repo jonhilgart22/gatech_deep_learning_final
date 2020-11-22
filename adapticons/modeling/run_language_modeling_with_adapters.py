@@ -752,6 +752,7 @@ def main():
         model.set_active_adapters([args.adapter_name])
     else:
         logger.info("Adapter already loaded")
+        model.train_adapter(model.config.adapters.adapter_list(AdapterType.text_lang)[0])
 
     model.to(args.device)
 
