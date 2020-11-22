@@ -75,6 +75,7 @@ def parse_args():
     parser.add_argument("--adapter_three", type=str, help="location of third adapter path")
     parser.add_argument("--adapter_four", type=str, help="location of fourth adapter path")
     parser.add_argument("--adapter_five", type=str, help="location of fifth adapter path")
+    parser.add_argument("--adapter_six", type=str, help="location of six adapter path")
     args = parser.parse_args()
     return args
 
@@ -133,6 +134,9 @@ def main():
         model.load_adapter(args.adapter_four, "text_lang", config=adapter_config)
     if args.adapter_five is not None:
         model.load_adapter(args.adapter_five, "text_lang", config=adapter_config)
+    if args.adapter_six is not None:
+
+        model.load_adapter(args.adapter_six, "text_lang", config=adapter_config)
 
     ADAPTER_SETUP = [
         [
