@@ -87,7 +87,9 @@ class DataTrainingArguments:
         metadata={"help": "The name of the task to train on"},
     )
 
-    data_dir: Optional[str] = field(default=None, metadata={"help": "The input/output data dir for TFDS."})
+    data_dir: Optional[str] = field(default=None, metadata={"help": "data dir."})
+
+    metric: Optional[str] = field(default="macro", metadata={"help": "evaluation metric."})
 
     max_seq_length: int = field(
         default=256,
@@ -319,7 +321,7 @@ def main():
         #print('labels: ', labels)
         preds = pred.predictions.argmax(-1)
         #print('preds: ', preds)
-        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='macro')
+        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=data_args.metric)
         #print('f1: ', f1)
         acc = accuracy_score(labels, preds)
         return {
