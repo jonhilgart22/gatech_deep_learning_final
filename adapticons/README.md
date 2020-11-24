@@ -39,7 +39,7 @@ python modeling.run_glue_alt.py \
   --do_train \
   --do_eval \
   --data_dir datasets/chemprot/ \
-  --max_seq_length 256 \
+  --max_seq_length 512 \
   --per_device_train_batch_size 16 \
   --gradient_accumulation_steps 1 \
   --learning_rate 2e-5 \
@@ -57,7 +57,7 @@ python modeling.run_glue_alt.py \
   --do_train \
   --do_eval \
   --data_dir datasets/hyperpartisan_news/ \
-  --max_seq_length 256 \
+  --max_seq_length 512 \
   --per_device_train_batch_size 16 \
   --gradient_accumulation_steps 1 \
   --learning_rate 2e-5 \
