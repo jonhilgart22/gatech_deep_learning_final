@@ -211,10 +211,10 @@ def main():
 
     elif 'ag' in data_dir or 'agnews' in data_dir:
         label_to_id_ft = {
-            "1": 0,
-            "2": 1,
-            "4": 2,
-            "3": 3
+            1: 0,
+            2: 1,
+            3: 2,
+            4: 3
         }
         num_labels = 4
 
@@ -223,7 +223,7 @@ def main():
         num_labels = 2
 
     elif 'imdb' in data_dir:
-        label_to_id_ft = {'0': 0, '1': 1}
+        label_to_id_ft = {0: 0, 1: 1}
         num_labels = 2
 
     else:
