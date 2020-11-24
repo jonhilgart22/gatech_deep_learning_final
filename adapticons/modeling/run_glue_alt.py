@@ -92,7 +92,7 @@ class DataTrainingArguments:
     metric: Optional[str] = field(default="macro", metadata={"help": "evaluation metric."})
 
     max_seq_length: int = field(
-        default=256,
+        default=512,
         metadata={
             "help": "The maximum total input sequence length after tokenization. Sequences longer "
             "than this will be truncated, sequences shorter will be padded."
@@ -169,7 +169,7 @@ def main():
             "DOWNREGULATOR": 8,
             "UPREGULATOR": 9,
             "AGONIST-ACTIVATOR": 10,
-            "SUBSTRATE_PRODUCT-OF": 11,
+            "SUBSTRATE_PRODUCT-OF": 11,  ## test set modify needed
             "AGONIST-INHIBITOR": 12
         }
         num_labels = 13
@@ -295,9 +295,9 @@ def main():
                     test_texts.append(json.loads(line)['text'])
                     test_labels.append(label_to_id_ft[json.loads(line)['label']])
 
-    train_encodings = tokenizer(train_texts, padding="max_length", max_length=256, truncation=True)
-    val_encodings = tokenizer(val_texts, padding="max_length", max_length=256, truncation=True)
-    test_encodings = tokenizer(test_texts, padding="max_length", max_length=256, truncation=True)
+    train_encodings = tokenizer(train_texts, padding="max_length", max_length=512, truncation=True)
+    val_encodings = tokenizer(val_texts, padding="max_length", max_length=512, truncation=True)
+    test_encodings = tokenizer(test_texts, padding="max_length", max_length=512, truncation=True)
 
     class FTDataset(torch.utils.data.Dataset):
         def __init__(self, encodings, labels):
@@ -350,7 +350,7 @@ def main():
         bsw = {}
         for i in model.state_dict():
             bsw[i] = model.state_dict()[i]
-        np.save(training_args.output_dir + 'bsm.npy', bsw) # Just used for sanity check, (500MB)
+        #np.save(training_args.output_dir + 'bsm.npy', bsw) # Just used for sanity check, (500MB)
 
         trainer.train(
             model_path=model_args.model_name_or_path if os.path.isdir(model_args.model_name_or_path) else None
@@ -361,7 +361,7 @@ def main():
         atw = {}
         for i in model.state_dict():
             atw[i] = model.state_dict()[i]
-        np.save(training_args.output_dir + 'atm.npy', atw) # Just used for sanity check, (500MB)
+        #np.save(training_args.output_dir + 'atm.npy', atw) # Just used for sanity check, (500MB)
 
         # For convenience, we also re-save the tokenizer to the same directory,
         # so that you can share your model easily on huggingface.co/models =)
