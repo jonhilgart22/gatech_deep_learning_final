@@ -22,12 +22,19 @@ python -m scripts.run_language_modeling --train_data_file datasets/chemprot/trai
 ```
 
 ## Run evaluation (fine-tuning on target task) w/wo Adapter
+Experiments were done with the environmental setting in adapter-hub [https://github.com/Adapter-Hub/adapter-transformers]
+(Python 3.6+ and PyTorch 1.1.0+)
+```bash
+git clone https://github.com/adapter-hub/adapter-transformers.git
+cd adapter-transformers
+pip install 
+```
 
 #### Baseline(Roberta) evaluation
 Below command assumes the name of dataset is one of [chemprot, rct-20k, rct-sample, citation_intent(ACL_ARC),
 sciie(SCIERC), ag(AGNEWS), hyperpartisan_news(HYPERPARTISAN), imdb, amazon(helpfulness)]
 ```bash
-python run_glue_alt.py \
+python modeling.run_glue_alt.py \
   --do_train \
   --do_eval \
   --data_dir datasets/chemprot/ \
@@ -44,7 +51,7 @@ python run_glue_alt.py \
 ```
 #### Roberta with a single adapter evaluation
 ```bash
-python run_glue_alt.py \
+python modeling.run_glue_alt.py \
   --do_train \
   --do_eval \
   --data_dir datasets/hyperpartisan_news/ \
