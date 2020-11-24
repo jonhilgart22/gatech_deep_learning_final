@@ -169,7 +169,7 @@ def main():
             "DOWNREGULATOR": 8,
             "UPREGULATOR": 9,
             "AGONIST-ACTIVATOR": 10,
-            "SUBSTRATE_PRODUCT-OF": 11,  ## test set modify needed
+            "SUBSTRATE_PRODUCT-OF": 11,
             "AGONIST-INHIBITOR": 12
         }
         num_labels = 13
