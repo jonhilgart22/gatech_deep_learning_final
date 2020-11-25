@@ -49,8 +49,10 @@ from transformers import (
     set_seed,
 )
 import transformers
+
 transformers.logging.set_verbosity_info()
 from datasets import load_dataset, load_metric
+
 logger = logging.getLogger(__name__)
 
 
@@ -73,6 +75,7 @@ class ModelArguments:
         default=None, metadata={"help": "Where do you want to store the pretrained models downloaded from s3"}
     )
 
+
 @dataclass
 class DataTrainingArguments:
     """
@@ -83,8 +86,7 @@ class DataTrainingArguments:
     """
 
     task_name: Optional[str] = field(
-        default=None,
-        metadata={"help": "The name of the task to train on"},
+        default=None, metadata={"help": "The name of the task to train on"},
     )
 
     data_dir: Optional[str] = field(default=None, metadata={"help": "data dir."})
@@ -108,6 +110,7 @@ class DataTrainingArguments:
     validation_file: Optional[str] = field(
         default=None, metadata={"help": "A csv or a json file containing the validation data."}
     )
+
 
 def main():
     # See all possible arguments in src/transformers/training_args.py
@@ -156,7 +159,7 @@ def main():
 
     # label to id, set same as in don't stop repo
     label_to_id_ft = {}
-    if 'chemprot' in data_dir:
+    if "chemprot" in data_dir:
         label_to_id_ft = {
             "INHIBITOR": 0,
             "SUBSTRATE": 1,
@@ -164,74 +167,66 @@ def main():
             "INDIRECT-UPREGULATOR": 3,
             "ACTIVATOR": 4,
             "ANTAGONIST": 5,
-            "PRODUCT-OF":6,
-            "AGONIST":7,
+            "PRODUCT-OF": 6,
+            "AGONIST": 7,
             "DOWNREGULATOR": 8,
             "UPREGULATOR": 9,
             "AGONIST-ACTIVATOR": 10,
             "SUBSTRATE_PRODUCT-OF": 11,  ## test set modify needed
-            "AGONIST-INHIBITOR": 12
+            "AGONIST-INHIBITOR": 12,
         }
         num_labels = 13
 
-    elif 'rct' in data_dir:
-        label_to_id_ft = {
-            "METHODS": 0,
-            "RESULTS": 1,
-            "CONCLUSIONS": 2,
-            "BACKGROUND": 3,
-            "OBJECTIVE": 4
-        }
+    elif "rct" in data_dir:
+        label_to_id_ft = {"METHODS": 0, "RESULTS": 1, "CONCLUSIONS": 2, "BACKGROUND": 3, "OBJECTIVE": 4}
         num_labels = 5
 
-    elif 'citation' in data_dir or 'acl' in data_dir:
+    elif "citation" in data_dir or "acl" in data_dir:
         label_to_id_ft = {
             "Background": 0,
             "Uses": 1,
             "CompareOrContrast": 2,
             "Motivation": 3,
             "Extends": 4,
-            "Future": 5}
+            "Future": 5,
+        }
         num_labels = 6
 
-    elif 'scierc' in data_dir or 'sciie' in data_dir:
+    elif "scierc" in data_dir or "sciie" in data_dir:
         label_to_id_ft = {
             "USED-FOR": 0,
-            "CONJUNCTION":1,
+            "CONJUNCTION": 1,
             "EVALUATE-FOR": 2,
             "HYPONYM-OF": 3,
             "PART-OF": 4,
             "FEATURE-OF": 5,
-            "COMPARE": 6}
+            "COMPARE": 6,
+        }
         num_labels = 7
 
-    elif 'hyper' in data_dir:
-        label_to_id_ft = {'false': 0, 'true': 1}
+    elif "hyper" in data_dir:
+        label_to_id_ft = {"false": 0, "true": 1}
         num_labels = 2
 
-    elif 'ag' in data_dir or 'agnews' in data_dir:
-        label_to_id_ft = {
-            1: 0,
-            2: 1,
-            3: 2,
-            4: 3
-        }
+    elif "ag" in data_dir or "agnews" in data_dir:
+        label_to_id_ft = {1: 0, 2: 1, 3: 2, 4: 3}
         num_labels = 4
 
-    elif 'amazon' in data_dir or 'helpful' in data_dir:
-        label_to_id_ft = {'helpful': 0, 'unhelpful': 1}
+    elif "amazon" in data_dir or "helpful" in data_dir:
+        label_to_id_ft = {"helpful": 0, "unhelpful": 1}
         num_labels = 2
 
-    elif 'imdb' in data_dir:
+    elif "imdb" in data_dir:
         label_to_id_ft = {0: 0, 1: 1}
         num_labels = 2
 
     else:
-        assert False, "Data_dir not in [chemprot, rct-20k, rct-sample, citation_intent(ACL_ARC), " \
-                      "sciie(SCIERC), ag(AGNEWS), hyperpartisan_new (HYPERPARTISAN), imdb, amazon(helpfulness)] "
+        assert False, (
+            "Data_dir not in [chemprot, rct-20k, rct-sample, citation_intent(ACL_ARC), "
+            "sciie(SCIERC), ag(AGNEWS), hyperpartisan_new (HYPERPARTISAN), imdb, amazon(helpfulness)] "
+        )
 
-
-    output_mode = 'classification'
+    output_mode = "classification"
 
     # Load pretrained model and tokenizer
     # Distributed training:
@@ -259,15 +254,17 @@ def main():
 
     # Freeze all model weights except of those of this adapter
     if adapter_args.train_adapter:
-        model.train_adapter(model.config.adapters.adapter_list(AdapterType.text_lang)[0])###model.train_adapter([task_name])
+        model.train_adapter(
+            model.config.adapters.adapter_list(AdapterType.text_lang)[0]
+        )  ###model.train_adapter([task_name])
         # Set the adapters to be used in every forward pass
         model.set_active_adapters(model.config.adapters.adapter_list(AdapterType.text_lang)[0])
-        #if lang_adapter_name:
+        # if lang_adapter_name:
         #    model.set_active_adapters([lang_adapter_name, task_name])
-        #else:
+        # else:
         #    model.set_active_adapters([task_name])
 
-    #with open('model_state_2.txt', 'w') as f:
+    # with open('model_state_2.txt', 'w') as f:
     #    print(model.state_dict(), file = f)
 
     ### load dataset, define compute_metrics ###
@@ -279,21 +276,21 @@ def main():
     test_texts = []
     test_labels = []
 
-    if data_dir[-1] != '/':
-        data_dir += '/'
+    if data_dir[-1] != "/":
+        data_dir += "/"
 
-    for each in ['train', 'dev', 'test']:
-        with open(data_dir + each + ".jsonl", 'r', encoding='utf-8') as f:
+    for each in ["train", "dev", "test"]:
+        with open(data_dir + each + ".jsonl", "r", encoding="utf-8") as f:
             for line in f:
-                if each == 'train':
-                    train_texts.append(json.loads(line)['text'])
-                    train_labels.append(label_to_id_ft[json.loads(line)['label']])
-                elif each == 'dev':
-                    val_texts.append(json.loads(line)['text'])
-                    val_labels.append(label_to_id_ft[json.loads(line)['label']])
+                if each == "train":
+                    train_texts.append(json.loads(line)["text"])
+                    train_labels.append(label_to_id_ft[json.loads(line)["label"]])
+                elif each == "dev":
+                    val_texts.append(json.loads(line)["text"])
+                    val_labels.append(label_to_id_ft[json.loads(line)["label"]])
                 else:
-                    test_texts.append(json.loads(line)['text'])
-                    test_labels.append(label_to_id_ft[json.loads(line)['label']])
+                    test_texts.append(json.loads(line)["text"])
+                    test_labels.append(label_to_id_ft[json.loads(line)["label"]])
 
     train_encodings = tokenizer(train_texts, padding="max_length", max_length=512, truncation=True)
     val_encodings = tokenizer(val_texts, padding="max_length", max_length=512, truncation=True)
@@ -306,7 +303,7 @@ def main():
 
         def __getitem__(self, idx):
             item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
-            item['labels'] = torch.tensor(self.labels[idx])
+            item["labels"] = torch.tensor(self.labels[idx])
             return item
 
         def __len__(self):
@@ -318,18 +315,13 @@ def main():
 
     def compute_metrics_ft(pred):
         labels = pred.label_ids
-        #print('labels: ', labels)
+        # print('labels: ', labels)
         preds = pred.predictions.argmax(-1)
-        #print('preds: ', preds)
+        # print('preds: ', preds)
         precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=data_args.metric)
-        #print('f1: ', f1)
+        # print('f1: ', f1)
         acc = accuracy_score(labels, preds)
-        return {
-            'accuracy': acc,
-            'f1': f1,
-            'precision': precision,
-            'recall': recall
-        }
+        return {"accuracy": acc, "f1": f1, "precision": precision, "recall": recall}
 
     #############################
 
@@ -350,7 +342,7 @@ def main():
         bsw = {}
         for i in model.state_dict():
             bsw[i] = model.state_dict()[i]
-        #np.save(training_args.output_dir + 'bsm.npy', bsw) # Just used for sanity check, (500MB)
+        # np.save(training_args.output_dir + 'bsm.npy', bsw) # Just used for sanity check, (500MB)
 
         trainer.train(
             model_path=model_args.model_name_or_path if os.path.isdir(model_args.model_name_or_path) else None
@@ -361,7 +353,7 @@ def main():
         atw = {}
         for i in model.state_dict():
             atw[i] = model.state_dict()[i]
-        #np.save(training_args.output_dir + 'atm.npy', atw) # Just used for sanity check, (500MB)
+        # np.save(training_args.output_dir + 'atm.npy', atw) # Just used for sanity check, (500MB)
 
         # For convenience, we also re-save the tokenizer to the same directory,
         # so that you can share your model easily on huggingface.co/models =)
@@ -385,7 +377,9 @@ def main():
 
             if trainer.is_world_master():
                 with open(output_eval_file, "w") as writer:
-                    logger.info("***** Eval results {} *****".format(data_args.task_name))####eval_dataset.args.task_name))
+                    logger.info(
+                        "***** Eval results {} *****".format(data_args.task_name)
+                    )  ####eval_dataset.args.task_name))
                     for key, value in eval_result.items():
                         logger.info("  %s = %s", key, value)
                         writer.write("%s = %s\n" % (key, value))
@@ -405,12 +399,14 @@ def main():
 
             if trainer.is_world_master():
                 with open(output_test_eval_file, "w") as writer:
-                    logger.info("***** Test results {} *****".format(data_args.task_name))####eval_dataset.args.task_name))
+                    logger.info(
+                        "***** Test results {} *****".format(data_args.task_name)
+                    )  ####eval_dataset.args.task_name))
                     for key, value in test_eval_result.items():
                         logger.info("  %s = %s", key, value)
                         writer.write("%s = %s\n" % (key, value))
 
-            '''
+            """
             predictions = trainer.predict(test_dataset=test_dataset).predictions
             if output_mode == "classification":
                 predictions = np.argmax(predictions, axis=1)
@@ -432,7 +428,7 @@ def main():
                             #item = test_dataset.get_labels()[item]
                             item = test_dataset.__getitem__(item)['labels'].cpu().numpy()
                             writer.write("%d\t%s\n" % (index, item))
-            '''
+            """
     return eval_results
 
 
