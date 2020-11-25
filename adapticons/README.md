@@ -18,7 +18,7 @@ python -m scripts.run_language_modeling --train_data_file datasets/chemprot/trai
                                         --learning_rate 0.0001 \
                                         --logging_steps 50 \
                                         --overwrite_output_dir \
-                                        --adapter_name="nli/scitail@ukp"
+                                        --adapter_name="chemprot_custom_adapter"
 ```
 
 ## Run evaluation (fine-tuning on target task) w/wo Adapter
@@ -27,7 +27,7 @@ Experiments were done with the environmental setting in [adapter-hub](https://gi
 ```bash
 git clone https://github.com/adapter-hub/adapter-transformers.git
 cd adapter-transformers
-pip install 
+pip install
 ```
 
 #### Baseline(Roberta) evaluation
@@ -35,7 +35,7 @@ Below command assumes the name of folder that contains dataset (each split ends 
 
 Download link for dataset is [here](https://github.com/allenai/dont-stop-pretraining/blob/master/environments/datasets.py). Append train.jsonl, dev.jsonl, test.jsonl after each url.
 ```bash
-python modeling.run_glue_alt.py \
+python modeling.new_train.py \
   --do_train \
   --do_eval \
   --data_dir datasets/chemprot/ \
@@ -53,7 +53,7 @@ python modeling.run_glue_alt.py \
 ```
 #### Roberta with a single adapter evaluation
 ```bash
-python modeling.run_glue_alt.py \
+python modeling.new_train.py \
   --do_train \
   --do_eval \
   --data_dir datasets/hyperpartisan_news/ \
@@ -75,4 +75,3 @@ For more information about arguments,
 
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/adapter_training.py
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/training_args.py
-
