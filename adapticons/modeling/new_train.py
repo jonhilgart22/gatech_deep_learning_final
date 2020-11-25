@@ -50,9 +50,6 @@ from transformers import (
 )
 import transformers
 
-transformers.logging.set_verbosity_info()
-from datasets import load_dataset, load_metric
-
 logger = logging.getLogger(__name__)
 
 
