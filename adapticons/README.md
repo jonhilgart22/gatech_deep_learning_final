@@ -108,8 +108,9 @@ What the above command does is creating roberta-base model, loading a series of 
 
 You can feed saved adapter modules (either pre-trained or fine-tuned on a specific target task) up to 8 by input the path of each saved adapter module to --fusion_adapter_path1, --fusion_adapter_path2, etc. 
 
-For loading fine-tuned adapter module, the path should be results/adapter/hyperpartisan_news2/ rather than results/adapter/hyperpartisan_news2/adapter_folder/. Copy and paste files in adapter_folder to the upper directory (results/adapter/hyperpartisan_news2/) before executing the command.
+For loading fine-tuned adapter module, the path should be like adapter/hyperpartisan_news2/ rather than adapter/hyperpartisan_news2/adapter_folder/. Copy and paste files in adapter_folder to the upper directory (adapter/hyperpartisan_news2/) before executing the command.
 
 For more information about arguments,
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/adapter_training.py
+
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/training_args.py
