@@ -19,7 +19,8 @@ import pickle
 import dataclasses
 import logging
 import os
-#os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 import sys
 import json
@@ -51,6 +52,7 @@ from transformers import (
     set_seed,
 )
 import transformers
+
 transformers.logging.set_verbosity_info()
 
 logger = logging.getLogger(__name__)
@@ -74,36 +76,17 @@ class ModelArguments:
     cache_dir: Optional[str] = field(
         default=None, metadata={"help": "Where do you want to store the pretrained models downloaded from s3"}
     )
-    train_fusion:  bool = field(
-        default=False, metadata={"help": "whether train adapter fusion model or not."}
-    )
-    fusion_adapter_path1: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path2: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path2: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path3: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path4: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path5: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path6: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path7: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
-    fusion_adapter_path8: Optional[str] = field(
-        default='', metadata={"help": "adapters for fusion"}
-    )
+    train_fusion: bool = field(default=False, metadata={"help": "whether train adapter fusion model or not."})
+    fusion_adapter_path1: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path2: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path2: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path3: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path4: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path5: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path6: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path7: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+    fusion_adapter_path8: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
+
 
 @dataclass
 class DataTrainingArguments:
@@ -133,9 +116,7 @@ class DataTrainingArguments:
         default=False, metadata={"help": "Overwrite the cached preprocessed datasets or not."}
     )
 
-    sanity_check: bool = field(
-        default=False, metadata={"help": "saved mdoels for sanity check."}
-    )
+    sanity_check: bool = field(default=False, metadata={"help": "saved mdoels for sanity check."})
 
     train_file: Optional[str] = field(
         default=None, metadata={"help": "A csv or a json file containing the training data."}
@@ -282,21 +263,21 @@ def main():
         config=config,
         cache_dir=model_args.cache_dir,
     )
-    #if data_args.sanity_check:
+    # if data_args.sanity_check:
     #    bsw = {}
     #    for i in model.state_dict():
     #        bsw[i] = model.state_dict()[i]
     #    np.save('after_model_loaded.npy', bsw)  # Just used for sanity check, (500MB)
 
     model.add_classification_head(data_args.task_name, num_labels=num_labels)
-    #if data_args.sanity_check:
+    # if data_args.sanity_check:
     #    bsw = {}
     #    for i in model.state_dict():
     #        bsw[i] = model.state_dict()[i]
     #    np.save('after_add_heads.npy', bsw) # Just used for sanity check, (500MB)
 
     # Freeze all model weights except of those of this adapter
-    #print(model.config.adapters.adapter_list(AdapterType.text_lang))
+    # print(model.config.adapters.adapter_list(AdapterType.text_lang))
 
     if adapter_args.train_adapter:
         model.train_adapter(
@@ -315,15 +296,20 @@ def main():
         fusion_path.append(model_args.fusion_adapter_path6)
         fusion_path.append(model_args.fusion_adapter_path7)
         fusion_path.append(model_args.fusion_adapter_path8)
-        while '' in fusion_path:
-            fusion_path.remove('')
+        while "" in fusion_path:
+            fusion_path.remove("")
 
         from transformers.adapter_config import PfeifferConfig
+
         for each in fusion_path:
             model.load_adapter(each, "text_lang", config=PfeifferConfig(), with_head=False)
 
-        ADAPTER_SETUP = [[list(model.config.adapters.adapters.keys())[i]
-                for i in range(len(list(model.config.adapters.adapters.keys())))]]
+        ADAPTER_SETUP = [
+            [
+                list(model.config.adapters.adapters.keys())[i]
+                for i in range(len(list(model.config.adapters.adapters.keys())))
+            ]
+        ]
 
         for each in ADAPTER_SETUP[0]:
             model.train_adapter(each)
@@ -334,7 +320,7 @@ def main():
         model.add_fusion(ADAPTER_SETUP[0], "dynamic")
         model.train_fusion(ADAPTER_SETUP)
 
-        #if data_args.sanity_check:
+        # if data_args.sanity_check:
         #    bsw = {}
         #    for i in model.state_dict():
         #        bsw[i] = model.state_dict()[i]
@@ -387,14 +373,15 @@ def main():
     test_dataset = FTDataset(test_encodings, test_labels)
 
     def compute_metrics_ft(pred):
-        #print('pred: ', pred)
+        # print('pred: ', pred)
         labels = pred.label_ids
-        #print('labels: ', labels)
+        # print('labels: ', labels)
         preds = pred.predictions.argmax(-1)
-        #print('preds: ', preds)
-        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=data_args.metric,
-                                                                   labels = [i for i in range(num_labels)])
-        #print('f1: ', f1)
+        # print('preds: ', preds)
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            labels, preds, average=data_args.metric, labels=[i for i in range(num_labels)]
+        )
+        # print('f1: ', f1)
         acc = accuracy_score(labels, preds)
         return {"accuracy": acc, "f1": f1, "precision": precision, "recall": recall}
 
@@ -409,7 +396,7 @@ def main():
             eval_dataset=eval_dataset,
             compute_metrics=compute_metrics_ft,
             do_save_full_model=True,
-            )
+        )
     else:
         save_full = False
         if adapter_args.train_adapter:
@@ -421,7 +408,7 @@ def main():
                 compute_metrics=compute_metrics_ft,
                 do_save_full_model=save_full,
                 do_save_adapters=adapter_args.train_adapter,
-                )
+            )
         else:
             trainer = Trainer(
                 model=model,
@@ -440,7 +427,7 @@ def main():
             bsw = {}
             for i in model.state_dict():
                 bsw[i] = model.state_dict()[i]
-            np.save(training_args.output_dir + 'before_training.npy', bsw) # Just used for sanity check, (500MB)
+            np.save(training_args.output_dir + "before_training.npy", bsw)  # Just used for sanity check, (500MB)
 
         trainer.train(
             model_path=model_args.model_name_or_path if os.path.isdir(model_args.model_name_or_path) else None
@@ -452,7 +439,7 @@ def main():
             bsw = {}
             for i in model.state_dict():
                 bsw[i] = model.state_dict()[i]
-            np.save(training_args.output_dir + 'after_training.npy', bsw) # Just used for sanity check, (500MB)
+            np.save(training_args.output_dir + "after_training.npy", bsw)  # Just used for sanity check, (500MB)
 
         # For convenience, we also re-save the tokenizer to the same directory,
         # so that you can share your model easily on huggingface.co/models =)
