@@ -55,6 +55,7 @@ python modeling.new_train.py \
   --model_name_or_path roberta-base \
   --metric macro \
 ```
+
 #### Roberta with a single adapter evaluation
 ```bash
 python modeling.new_train.py \
@@ -75,6 +76,13 @@ python modeling.new_train.py \
   --adapter_config pfeiffer \
   --metric macro \
 ```
+
+For argument --task_name, new_train.py expect this the same as the task name of adapter which was used when you performed pra-training. Specifically, when you pre-trained adapter, you add_adapter with a particular name such as "sst-2" as below.
+
+model.add_adapter("sst-2", AdapterType.text_task)
+
+This task_name argument would be the same as the above name.
+
 For more information about arguments,
 
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/adapter_training.py
