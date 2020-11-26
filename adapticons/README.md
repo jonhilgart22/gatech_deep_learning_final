@@ -79,7 +79,7 @@ For argument --task_name, new_train.py expect this the same as the task name of 
 
 model.add_adapter("sst-2", AdapterType.text_task)
 
-However, the training process is not affected whether the two task names are the same or not. 
+However, the training process is not affected by --task_name argument. 
 
 For more information about arguments,
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/adapter_training.py
