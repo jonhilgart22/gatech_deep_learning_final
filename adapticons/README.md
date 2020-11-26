@@ -81,8 +81,6 @@ For argument --task_name, new_train.py expect this the same as the task name of 
 
 model.add_adapter("sst-2", AdapterType.text_task)
 
-This task_name argument would be the same as the above name.
-
 For more information about arguments,
 
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/adapter_training.py
