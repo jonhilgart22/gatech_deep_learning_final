@@ -75,12 +75,12 @@ python modeling.new_train.py \
   --adapter_config pfeiffer \
   --metric macro \
 ```
-
 For argument --task_name, new_train.py expect this the same as the task name of adapter which was used when you performed pra-training. Specifically, when you pre-trained adapter, you add_adapter with a particular name such as "sst-2" as below.
 
 model.add_adapter("sst-2", AdapterType.text_task)
 
-For more information about arguments,
+However, the training process is not affected whether the two task names are the same or not. 
 
+For more information about arguments,
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/adapter_training.py
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/training_args.py
