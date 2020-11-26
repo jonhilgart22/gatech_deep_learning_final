@@ -33,7 +33,7 @@ pip install .
 pip install sklearn
 ```
 
-#### Baseline(Roberta) evaluation
+#### Baseline(Roberta) / TAPT evaluation
 Below command assumes the name of folder that contains dataset (each split ends with .jsonl) is one of [chemprot, rct-20k, rct-sample, citation_intent(ACL_ARC), sciie(SCIERC), ag(AGNEWS), hyperpartisan_news(HYPERPARTISAN), imdb, amazon(helpfulness)].
 
 Download link for dataset is [here](https://github.com/allenai/dont-stop-pretraining/blob/master/environments/datasets.py). Append train.jsonl, dev.jsonl, test.jsonl after each url.
@@ -54,6 +54,7 @@ python modeling.new_train.py \
   --model_name_or_path roberta-base \
   --metric macro \
 ```
+For evaluating TAPT model, intput the path of saved TAPT model(e.g., cks/tapt-acl/) in --model_name_or_path.
 
 #### Roberta with a single adapter evaluation
 ```bash
@@ -80,6 +81,34 @@ For argument --task_name, new_train.py expect this the same as the task name of 
 model.add_adapter("sst-2", AdapterType.text_task)
 
 If those are different, the script will print the message like "no prediction head for...". However, the training process is not affected by this message.
+
+#### Roberta with adapter fusion model evaluation
+```bash
+python modeling.new_train.py \
+  --do_train \
+  --do_eval \
+  --data_dir datasets/hyperpartisan_news/ \
+  --max_seq_length 512 \
+  --per_device_train_batch_size 16 \
+  --gradient_accumulation_steps 1 \
+  --learning_rate 2e-5 \
+  --num_train_epochs 10 \
+  --output_dir results/adapter_fusion/hyper_rct/ \
+  --task_name hyper_cls \
+  --do_predict \
+  --load_best_model_at_end \
+  --train_fusion \
+  --model_name_or_path roberta-base \
+  --adapter_config pfeiffer \
+  --metric macro \
+  --fusion_adapter_path1 results/adapter/hyperpartisan_news2/ \
+  --fusion_adapter_path2 results/adapter/rct-sample/ \
+```
+What the above command does is creating roberta-base model, loading a series of individual adapter sequentially, making a fusion layer, and performing fine-tuning the weights in the fusion layers and the final classification layers while others are fixed. 
+
+You can feed saved adapter modules (either pre-trained or fine-tuned on a specific target task) up to 8 by input the path of each saved adapter module to --fusion_adapter_path1, --fusion_adapter_path2, etc. 
+
+For loading fine-tuned adapter module, the path should be results/adapter/hyperpartisan_news2/ rather than results/adapter/hyperpartisan_news2/adapter_folder/. Copy and paste files in adapter_folder to the upper directory (results/adapter/hyperpartisan_news2/) before executing the command.
 
 For more information about arguments,
 https://github.com/Adapter-Hub/adapter-transformers/blob/master/src/transformers/adapter_training.py
