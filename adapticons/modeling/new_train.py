@@ -19,6 +19,8 @@ import pickle
 import dataclasses
 import logging
 import os
+#os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 import sys
 import json
 import torch
@@ -72,7 +74,36 @@ class ModelArguments:
     cache_dir: Optional[str] = field(
         default=None, metadata={"help": "Where do you want to store the pretrained models downloaded from s3"}
     )
-
+    train_fusion:  bool = field(
+        default=False, metadata={"help": "whether train adapter fusion model or not."}
+    )
+    fusion_adapter_path1: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path2: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path2: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path3: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path4: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path5: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path6: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path7: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
+    fusion_adapter_path8: Optional[str] = field(
+        default='', metadata={"help": "adapters for fusion"}
+    )
 
 @dataclass
 class DataTrainingArguments:
@@ -100,6 +131,10 @@ class DataTrainingArguments:
     )
     overwrite_cache: bool = field(
         default=False, metadata={"help": "Overwrite the cached preprocessed datasets or not."}
+    )
+
+    sanity_check: bool = field(
+        default=False, metadata={"help": "saved mdoels for sanity check."}
     )
 
     train_file: Optional[str] = field(
@@ -247,23 +282,63 @@ def main():
         config=config,
         cache_dir=model_args.cache_dir,
     )
+    #if data_args.sanity_check:
+    #    bsw = {}
+    #    for i in model.state_dict():
+    #        bsw[i] = model.state_dict()[i]
+    #    np.save('after_model_loaded.npy', bsw)  # Just used for sanity check, (500MB)
+
     model.add_classification_head(data_args.task_name, num_labels=num_labels)
-    task_name = data_args.task_name
+    #if data_args.sanity_check:
+    #    bsw = {}
+    #    for i in model.state_dict():
+    #        bsw[i] = model.state_dict()[i]
+    #    np.save('after_add_heads.npy', bsw) # Just used for sanity check, (500MB)
 
     # Freeze all model weights except of those of this adapter
+    #print(model.config.adapters.adapter_list(AdapterType.text_lang))
+
     if adapter_args.train_adapter:
         model.train_adapter(
             model.config.adapters.adapter_list(AdapterType.text_lang)[0]
         )  ###model.train_adapter([task_name])
         # Set the adapters to be used in every forward pass
         model.set_active_adapters(model.config.adapters.adapter_list(AdapterType.text_lang)[0])
-        # if lang_adapter_name:
-        #    model.set_active_adapters([lang_adapter_name, task_name])
-        # else:
-        #    model.set_active_adapters([task_name])
 
-    # with open('model_state_2.txt', 'w') as f:
-    #    print(model.state_dict(), file = f)
+    elif model_args.train_fusion:
+        fusion_path = []
+        fusion_path.append(model_args.fusion_adapter_path1)
+        fusion_path.append(model_args.fusion_adapter_path2)
+        fusion_path.append(model_args.fusion_adapter_path3)
+        fusion_path.append(model_args.fusion_adapter_path4)
+        fusion_path.append(model_args.fusion_adapter_path5)
+        fusion_path.append(model_args.fusion_adapter_path6)
+        fusion_path.append(model_args.fusion_adapter_path7)
+        fusion_path.append(model_args.fusion_adapter_path8)
+        while '' in fusion_path:
+            fusion_path.remove('')
+
+        from transformers.adapter_config import PfeifferConfig
+        for each in fusion_path:
+            model.load_adapter(each, "text_lang", config=PfeifferConfig(), with_head=False)
+
+        ADAPTER_SETUP = [[list(model.config.adapters.adapters.keys())[i]
+                for i in range(len(list(model.config.adapters.adapters.keys())))]]
+
+        for each in ADAPTER_SETUP[0]:
+            model.train_adapter(each)
+
+        # Add a fusion layer and tell the model to train fusion
+        logger.info(f"Using adapter fusion with the following setup {ADAPTER_SETUP}")
+        logger.info(f"Model adapters = {ADAPTER_SETUP}")
+        model.add_fusion(ADAPTER_SETUP[0], "dynamic")
+        model.train_fusion(ADAPTER_SETUP)
+
+        #if data_args.sanity_check:
+        #    bsw = {}
+        #    for i in model.state_dict():
+        #        bsw[i] = model.state_dict()[i]
+        #    np.save('after_fusion_merged.npy', bsw)  # Just used for sanity check, (500MB)
 
     ### load dataset, define compute_metrics ###
     data_dir = data_args.data_dir
@@ -312,35 +387,60 @@ def main():
     test_dataset = FTDataset(test_encodings, test_labels)
 
     def compute_metrics_ft(pred):
+        #print('pred: ', pred)
         labels = pred.label_ids
-        # print('labels: ', labels)
+        #print('labels: ', labels)
         preds = pred.predictions.argmax(-1)
-        # print('preds: ', preds)
-        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=data_args.metric)
-        # print('f1: ', f1)
+        #print('preds: ', preds)
+        precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average=data_args.metric,
+                                                                   labels = [i for i in range(num_labels)])
+        #print('f1: ', f1)
         acc = accuracy_score(labels, preds)
         return {"accuracy": acc, "f1": f1, "precision": precision, "recall": recall}
 
     #############################
 
     # Initialize our Trainer
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        compute_metrics=compute_metrics_ft,
-        do_save_full_model=not adapter_args.train_adapter,
-        do_save_adapters=adapter_args.train_adapter,
-    )
+    if not adapter_args.train_adapter and not model_args.train_fusion:
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            compute_metrics=compute_metrics_ft,
+            do_save_full_model=True,
+            )
+    else:
+        save_full = False
+        if adapter_args.train_adapter:
+            trainer = Trainer(
+                model=model,
+                args=training_args,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                compute_metrics=compute_metrics_ft,
+                do_save_full_model=save_full,
+                do_save_adapters=adapter_args.train_adapter,
+                )
+        else:
+            trainer = Trainer(
+                model=model,
+                args=training_args,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                compute_metrics=compute_metrics_ft,
+                do_save_full_model=save_full,
+                do_save_adapter_fusion=True,
+            )
 
     # Training
     if training_args.do_train:
         # save model before training
-        bsw = {}
-        for i in model.state_dict():
-            bsw[i] = model.state_dict()[i]
-        # np.save(training_args.output_dir + 'bsm.npy', bsw) # Just used for sanity check, (500MB)
+        if data_args.sanity_check:
+            bsw = {}
+            for i in model.state_dict():
+                bsw[i] = model.state_dict()[i]
+            np.save(training_args.output_dir + 'before_training.npy', bsw) # Just used for sanity check, (500MB)
 
         trainer.train(
             model_path=model_args.model_name_or_path if os.path.isdir(model_args.model_name_or_path) else None
@@ -348,10 +448,11 @@ def main():
         trainer.save_model()
 
         # after finishing traning, save keys
-        atw = {}
-        for i in model.state_dict():
-            atw[i] = model.state_dict()[i]
-        # np.save(training_args.output_dir + 'atm.npy', atw) # Just used for sanity check, (500MB)
+        if data_args.sanity_check:
+            bsw = {}
+            for i in model.state_dict():
+                bsw[i] = model.state_dict()[i]
+            np.save(training_args.output_dir + 'after_training.npy', bsw) # Just used for sanity check, (500MB)
 
         # For convenience, we also re-save the tokenizer to the same directory,
         # so that you can share your model easily on huggingface.co/models =)
@@ -363,12 +464,7 @@ def main():
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
 
-        # Loop to handle MNLI double evaluation (matched, mis-matched)
         eval_datasets = [eval_dataset]
-        if data_args.task_name == "mnli":
-            mnli_mm_data_args = dataclasses.replace(data_args, task_name="mnli-mm")
-            eval_datasets.append(GlueDataset(mnli_mm_data_args, tokenizer=tokenizer, mode="dev"))
-
         for eval_dataset in eval_datasets:
             eval_result = trainer.evaluate(eval_dataset=eval_dataset)
             output_eval_file = os.path.join(training_args.output_dir, f"eval_results_{data_args.task_name}.txt")
@@ -387,9 +483,6 @@ def main():
     if training_args.do_predict:
         logging.info("*** Test ***")
         test_datasets = [test_dataset]
-        if data_args.task_name == "mnli":
-            mnli_mm_data_args = dataclasses.replace(data_args, task_name="mnli-mm")
-            test_datasets.append(GlueDataset(mnli_mm_data_args, tokenizer=tokenizer, mode="test"))
 
         for test_dataset in test_datasets:
             test_eval_result = trainer.evaluate(eval_dataset=test_dataset)
@@ -404,29 +497,6 @@ def main():
                         logger.info("  %s = %s", key, value)
                         writer.write("%s = %s\n" % (key, value))
 
-            """
-            predictions = trainer.predict(test_dataset=test_dataset).predictions
-            if output_mode == "classification":
-                predictions = np.argmax(predictions, axis=1)
-
-            output_test_file = os.path.join(
-                training_args.output_dir, f"test_results_{data_args.task_name}.txt" ###test_dataset.args.task_name
-            )
-            if trainer.is_world_master():
-                with open(output_test_file, "w") as writer:
-                    logger.info("***** Test results {} *****".format(data_args.task_name))####test_dataset.args.task_name))
-                    writer.write("index\tprediction\n")
-                    for index, item in enumerate(predictions):
-                        if output_mode == "regression":
-                            writer.write("%d\t%3.3f\n" % (index, item))
-                        else:
-                            #print('item: ', item)
-                            #print('predictions: ', predictions)
-                            #print('?: ', test_dataset.__getitem__(item)['labels'].cpu().numpy())
-                            #item = test_dataset.get_labels()[item]
-                            item = test_dataset.__getitem__(item)['labels'].cpu().numpy()
-                            writer.write("%d\t%s\n" % (index, item))
-            """
     return eval_results
 
 
