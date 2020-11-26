@@ -1,0 +1,33 @@
+adapter-transformers @ file:///home/seungwon12/%EB%B0%94%ED%83%95%ED%99%94%EB%A9%B4/oms/dl/project/tttest/adapter-transformers
+certifi==2020.11.8
+chardet==3.0.4
+click==7.1.2
+dataclasses==0.8
+filelock==3.0.12
+idna==2.10
+joblib==0.17.0
+mkl-fft==1.2.0
+mkl-random==1.1.1
+mkl-service==2.3.0
+numpy==1.19.4
+olefile==0.46
+packaging==20.4
+Pillow @ file:///tmp/build/80754af9/pillow_1603822238230/work
+protobuf==3.14.0
+pyparsing==2.4.7
+regex==2020.11.13
+requests==2.25.0
+sacremoses==0.0.43
+scikit-learn==0.23.2
+scipy==1.5.4
+sentencepiece==0.1.91
+six @ file:///tmp/build/80754af9/six_1605205335545/work
+sklearn==0.0
+threadpoolctl==2.1.0
+tokenizers==0.9.3
+torch==1.7.0
+torchaudio==0.7.0a0+ac17b64
+torchvision==0.8.1
+tqdm==4.53.0
+typing-extensions @ file:///tmp/build/80754af9/typing_extensions_1598376058250/work
+urllib3==1.26.2
