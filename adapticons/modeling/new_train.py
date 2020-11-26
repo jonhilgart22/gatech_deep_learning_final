@@ -49,6 +49,7 @@ from transformers import (
     set_seed,
 )
 import transformers
+transformers.logging.set_verbosity_info()
 
 logger = logging.getLogger(__name__)
 
