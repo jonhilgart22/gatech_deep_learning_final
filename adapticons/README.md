@@ -82,6 +82,8 @@ model.add_adapter("sst-2", AdapterType.text_task)
 
 If those are different, the script will print the message like "no prediction head for...". However, the training process is not affected by this message.
 
+For training adapter which is not pre-trained on language corpus, replace --train_adapter with --train_adapter_wop and set --model_name_or_path as roberta-base.
+
 #### Roberta with adapter fusion model evaluation
 ```bash
 python modeling.new_train.py \
