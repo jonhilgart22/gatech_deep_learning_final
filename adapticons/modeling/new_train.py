@@ -20,7 +20,7 @@ import dataclasses
 import logging
 import os
 
-# os.environ["CUDA_VISIBLE_DEVICES"]="0"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 import sys
 import json
@@ -77,6 +77,7 @@ class ModelArguments:
         default=None, metadata={"help": "Where do you want to store the pretrained models downloaded from s3"}
     )
     train_fusion: bool = field(default=False, metadata={"help": "whether train adapter fusion model or not."})
+    train_adapter_wop: bool = field(default=False, metadata={"help": "whether train adapter without pretraining."})
     fusion_adapter_path1: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
     fusion_adapter_path2: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
     fusion_adapter_path2: Optional[str] = field(default="", metadata={"help": "adapters for fusion"})
@@ -269,20 +270,15 @@ def main():
     #        bsw[i] = model.state_dict()[i]
     #    np.save('after_model_loaded.npy', bsw)  # Just used for sanity check, (500MB)
 
-    model.add_classification_head(data_args.task_name, num_labels=num_labels)
-    # if data_args.sanity_check:
-    #    bsw = {}
-    #    for i in model.state_dict():
-    #        bsw[i] = model.state_dict()[i]
-    #    np.save('after_add_heads.npy', bsw) # Just used for sanity check, (500MB)
+    if model_args.train_adapter_wop:
+        model.add_adapter(data_args.task_name, AdapterType.text_task)
+        model.train_adapter([data_args.task_name])
+        model.add_classification_head(data_args.task_name, num_labels=num_labels)
+        model.set_active_adapters([[data_args.task_name]])
 
-    # Freeze all model weights except of those of this adapter
-    # print(model.config.adapters.adapter_list(AdapterType.text_lang))
-
-    if adapter_args.train_adapter:
-        model.train_adapter(
-            model.config.adapters.adapter_list(AdapterType.text_lang)[0]
-        )  ###model.train_adapter([task_name])
+    elif adapter_args.train_adapter:
+        model.train_adapter(model.config.adapters.adapter_list(AdapterType.text_lang)[0])  ###model.train_adapter([task_name])
+        model.add_classification_head(model.config.adapters.adapter_list(AdapterType.text_lang)[0], num_labels=num_labels)
         # Set the adapters to be used in every forward pass
         model.set_active_adapters(model.config.adapters.adapter_list(AdapterType.text_lang)[0])
 
@@ -311,20 +307,24 @@ def main():
             ]
         ]
 
-        for each in ADAPTER_SETUP[0]:
-            model.train_adapter(each)
-
         # Add a fusion layer and tell the model to train fusion
         logger.info(f"Using adapter fusion with the following setup {ADAPTER_SETUP}")
         logger.info(f"Model adapters = {ADAPTER_SETUP}")
         model.add_fusion(ADAPTER_SETUP[0], "dynamic")
         model.train_fusion(ADAPTER_SETUP)
+        model.add_classification_head(data_args.task_name, num_labels=num_labels)
 
-        # if data_args.sanity_check:
-        #    bsw = {}
-        #    for i in model.state_dict():
-        #        bsw[i] = model.state_dict()[i]
-        #    np.save('after_fusion_merged.npy', bsw)  # Just used for sanity check, (500MB)
+    # if data_args.sanity_check:
+    #    bsw = {}
+    #    for i in model.state_dict():
+    #        bsw[i] = model.state_dict()[i]
+    #    np.save('after_add_heads.npy', bsw) # Just used for sanity check, (500MB)
+
+    # if data_args.sanity_check:
+    #    bsw = {}
+    #    for i in model.state_dict():
+    #        bsw[i] = model.state_dict()[i]
+    #    np.save('after_fusion_merged.npy', bsw)  # Just used for sanity check, (500MB)
 
     ### load dataset, define compute_metrics ###
     data_dir = data_args.data_dir
