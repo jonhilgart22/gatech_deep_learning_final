@@ -311,6 +311,9 @@ def main():
         model.train_fusion(ADAPTER_SETUP)
         model.add_classification_head(data_args.task_name, num_labels=num_labels)
 
+    else:
+        model.add_classification_head(data_args.task_name, num_labels=num_labels)
+
     # if data_args.sanity_check:
     #    bsw = {}
     #    for i in model.state_dict():
