@@ -822,10 +822,8 @@ def main():
         )  # Take care of distributed/parallel training
         model_to_save.save_pretrained(args.output_dir)
         tokenizer.save_pretrained(args.output_dir)
-        # save adapter
-
-        for name in list(model.config.adapters.adapters.keys()):
-            model.save_adapter(args.output_dir, name)
+        # save adapter fusion
+        model.save_all_adapter_fusions(args.output_dir)
 
         # Good practice: save your training arguments together with the trained model
         torch.save(args, os.path.join(args.output_dir, "training_args.bin"))
@@ -850,10 +848,12 @@ def main():
             prefix = checkpoint.split("/")[-1] if checkpoint.find("checkpoint") != -1 else ""
 
             model = AutoModelWithLMHead.from_pretrained(checkpoint)
+            # the adapter fusion is loaded in with you load the model?
+
             if args.use_adapter_fusion:
                 model.load_adapter(args.output_dir)  # load saved adapter
-                for name in list(model.config.adapters.adapters.keys()):
-                    model.set_active_adapters(name)  # set the active adapter
+            for name in list(model.config.adapters.adapters.keys()):
+                model.set_active_adapters(name)  # set the active adapter
 
             model.to(args.device)
             result = evaluate(args, model, tokenizer, prefix=prefix)
