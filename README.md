@@ -5,7 +5,54 @@
 Get started with
 `make init_project`
 
-# Spreadsheet of trained eval_results
+# Overview
+
+This project worked to build on top of [Don't stop pretraining](https://github.com/allenai/dont-stop-pretraining). This project analyzed whether we could match performance of the don't stop pretraining code while introducing [Adapters](https://github.com/Adapter-Hub/adapter-transformers) to the RoBERTa architecture.
+
+
+*Adapter Architecture*
+![adapterst](media/adapter_architecture.png)
+
+
+# Process & Performance
+
+The process that we experimented with is called task adaptive pretraining or TAPT. As outlined from the don't stop pretraining paper, the authors:
+  - (1) train the RoBERTa base model using on a masked-language-modeling task (MLM) for 100 epochs
+  - (2) Use this model from the MLM step on a downstream classification task for 10 epochs
+
+We experimentsed using adapters to follow this process and generally found that the adapters, after hyperparameter tuning, performed as well, or better, than the don't stop pretraining results even when we skipped the MLM step. The main takeaway for us was that we could match results in a less computationally expensive way leveraging Adapters.
+
+
+# Results
+
+
+| Dataset       | Original results |          |       Ours       |          |
+| ------------- | :--------------: | :------: | :--------------: | :------: |
+|               | Baseline Roberta |   TAPT   | Baseline Roberta |   TAPT   |
+| CHEMPROT      |       81.9       | 82.6(↗)  |      82.13       | 82.59(↗) |
+| RCT           |       87.2       | 87.7(↗)  |      85.59       | 87.64(↗) |
+| ACL-ARC       |       63.0       | 67.4(↗)  |      64.28       | 68.69(↗) |
+| SCIERC        |       77.3       | 79.3(↗)  |      78.49       | 80.73(↗) |
+| HYPERPARTISAN |       86.6       | 90.4(↗)  |       93.5       | 91.81(↘) |
+| AGNEWS        |       93.9       | 94.5(↗)  |      93.75       | 94.13(↗) |
+| HELPFULNESS   |       65.1       | 68.5(↗)  |      68.42       | 68.61(↗) |
+| IMDB          |       95.0       | 95.5(↗)  |      95.42       | 95.03(↘) |
+| Average F1    |      81.25       | 83.24(↗) |       82.7       | 83.65(↗) |
+
+# Data
+
+| Domain           | Task          | Label Type                  | Number of instances (Train/Dev/Test) |
+| ---------------- | ------------- | --------------------------- | ------------------------------------ |
+| Biomedical       | ChemProt      | Relationship classification | 4169/2427/3469                       |
+| Biomedical       | RCT           | Abstract sentence roles     | 18040/30212/30135                    |
+| Computer Science | ACL-ARC       | Citation intent             | 1688/114/139                         |
+| Computer Science | SciERC        | Relation classification     | 3219/455/974                         |
+| News             | Hyperpartisan | Partisanship                | 515/65/65                            |
+| News             | Agnews        | Topic                       | 115000/5000/7600                     |
+| Reviews          | Helpfulness   | Review helpfulness          | 115251/5000/25000                    |
+| Reviews          | IMDB          | Review sentiment            | 20000/5000/25000                     |
+
+# Spreadsheet of all results
 
 [Spreadsheet](https://docs.google.com/spreadsheets/d/1NvbIKsmWVI_wYF_j-fXwX3lfA5Tc2oikwBKMGfuS0mE/edit#gid=0)
 
@@ -87,6 +134,7 @@ python modeling.new_train.py \
   --adapter_config pfeiffer \
   --metric macro \
 ```
+
 For argument --task_name, new_train.py expect this the same as the task name of adapter which was used when you performed pra-training. Specifically, when you pre-trained adapter, you add_adapter with a particular name such as "sst-2" as below.
 
 model.add_adapter("sst-2", AdapterType.text_task)
