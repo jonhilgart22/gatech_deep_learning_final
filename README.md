@@ -25,6 +25,8 @@ We experimentsed using adapters to follow this process and generally found that 
 
 # Results
 
+- Replicating the Don't stop pretraining paper results
+
 
 | Dataset       | Original results |          |       Ours       |          |
 | ------------- | :--------------: | :------: | :--------------: | :------: |
@@ -39,7 +41,21 @@ We experimentsed using adapters to follow this process and generally found that 
 | IMDB          |       95.0       | 95.5(↗)  |      95.42       | 95.03(↘) |
 | Average F1    |      81.25       | 83.24(↗) |       82.7       | 83.65(↗) |
 
+- Training using Adapters
+
+| Dataset       | TAPT paper results (F1) | Adapter - default params (LR 2e-5, 10 epochs) | Adapter (F1) w/ updated params (LR 1e-4, 10 epochs) | Adapter no pretraining (F1) w/ updated params |
+| ------------- | ----------------------- | --------------------------------------------- | --------------------------------------------------- | --------------------------------------------- |
+| CHEMPROT      | 82.60%                  | 74.26%                                        | 82.68%                                              | *82.79%*                                      |
+| RCT           | 87.70%                  | 87.54%                                        | *87.25%*                                            | 87.32%                                        |
+| ACL-ARC       | 67.40%                  | 24.22%                                        | *54.04%*                                            | 53.97%                                        |
+| SCIERC        | *79.30%*                | 44.24%                                        | 76.85%                                              | 76.79%                                        |
+| HYPERPARTISAN | *90.40%*                | 36.89%                                        | 71.86%                                              | 75.95%                                        |
+| AGNEWS        | *94.50%*                | 93.75%                                        | *94.23%*                                            | *94.2%*                                       |
+| HELPFULNESS   | 68.50%                  | 67.93%                                        | 69.47%                                              | *69.51%*                                      |
+| IMDB          | *95.50%*                | 95.46%                                        | 95.36%                                              | *95.52%*                                      |
+
 # Data
+
 
 | Domain           | Task          | Label Type                  | Number of instances (Train/Dev/Test) |
 | ---------------- | ------------- | --------------------------- | ------------------------------------ |
