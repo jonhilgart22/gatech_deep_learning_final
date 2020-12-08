@@ -26,6 +26,12 @@ The process that we experimented with is called task adaptive pretraining or TAP
 
 We experimentsed using adapters to follow this process and generally found that the adapters, after hyperparameter tuning, performed as well, or better, than the don't stop pretraining results even when we skipped the MLM step. The main takeaway for us was that we could match results in a less computationally expensive way leveraging Adapters.
 
+# Replication
+
+Our team ran these experiments on Google Colab. However, you can replicate by running the notebooks.
+- `colab_train_gpu.ipynb`
+
+In addition, the notebooks `NS_DL_Project_X.ipynb` show different experiments used for this repo.
 
 # Results
 
