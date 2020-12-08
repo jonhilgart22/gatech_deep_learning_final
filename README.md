@@ -2,7 +2,11 @@
 
 - Adapting Transformers for all the things
 
-Get started with
+
+
+# Requirements
+1. Poetry `pip install poetry`
+2. Get started with
 `make init_project`
 
 # Overview

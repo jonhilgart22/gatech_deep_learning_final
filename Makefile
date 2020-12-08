@@ -70,7 +70,7 @@ help:
 install_dependencies:
 	poetry install --no-root
 
-# Initializing a new poetry project and DVC - DONT RUN THIS, JUST FOR VERY 1ST TIME
+
 init_project: checkenv install_dependencies
 	pre-commit install && python3 -m ipykernel install --user --name=adapticons
 
